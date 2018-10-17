@@ -38,8 +38,6 @@ int sim_erk_dims_calculate_size()
     return size;
 }
 
-
-
 void *sim_erk_dims_assign(void *config_, void *raw_memory)
 {
     char *c_ptr = raw_memory;
@@ -56,23 +54,17 @@ void *sim_erk_dims_assign(void *config_, void *raw_memory)
     return dims;
 }
 
-
-
 void sim_erk_set_nx(void *dims_, int nx)
 {
     sim_erk_dims *dims = (sim_erk_dims *) dims_;
     dims->nx = nx;
 }
 
-
-
 void sim_erk_set_nu(void *dims_, int nu)
 {
     sim_erk_dims *dims = (sim_erk_dims *) dims_;
     dims->nu = nu;
 }
-
-
 
 void sim_erk_set_nz(void *dims_, int nz)
 {
@@ -81,14 +73,11 @@ void sim_erk_set_nz(void *dims_, int nz)
 }
 
 
-
 void sim_erk_get_nx(void *dims_, int *nx)
 {
     sim_erk_dims *dims = (sim_erk_dims *) dims_;
     *nx = dims->nx;
 }
-
-
 
 void sim_erk_get_nu(void *dims_, int *nu)
 {
@@ -96,15 +85,11 @@ void sim_erk_get_nu(void *dims_, int *nu)
     *nu = dims->nu;
 }
 
-
-
 void sim_erk_get_nz(void *dims_, int *nz)
 {
     sim_erk_dims *dims = (sim_erk_dims *) dims_;
     *nz = dims->nz;
 }
-
-
 
 /************************************************
  * model
@@ -119,8 +104,6 @@ int sim_erk_model_calculate_size(void *config, void *dims)
     return size;
 }
 
-
-
 void *sim_erk_model_assign(void *config, void *dims, void *raw_memory)
 {
     char *c_ptr = (char *) raw_memory;
@@ -130,8 +113,6 @@ void *sim_erk_model_assign(void *config, void *dims, void *raw_memory)
 
     return model;
 }
-
-
 
 int sim_erk_model_set_function(void *model_, sim_function_t fun_type, void *fun)
 {
@@ -160,8 +141,6 @@ int sim_erk_model_set_function(void *model_, sim_function_t fun_type, void *fun)
     return ACADOS_SUCCESS;
 }
 
-
-
 /************************************************
  * opts
  ************************************************/
@@ -181,8 +160,6 @@ int sim_erk_opts_calculate_size(void *config_, void *dims)
 
     return size;
 }
-
-
 
 void *sim_erk_opts_assign(void *config_, void *dims, void *raw_memory)
 {
@@ -207,8 +184,6 @@ void *sim_erk_opts_assign(void *config_, void *dims, void *raw_memory)
 
     return (void *) opts;
 }
-
-
 
 void sim_erk_opts_initialize_default(void *config_, void *dims_, void *opts_)
 {
@@ -303,8 +278,6 @@ void sim_erk_opts_initialize_default(void *config_, void *dims_, void *opts_)
     opts->sens_algebraic = false;
 }
 
-
-
 void sim_erk_opts_update(void *config_, void *dims, void *opts_)
 {
     sim_rk_opts *opts = opts_;
@@ -392,8 +365,6 @@ void sim_erk_opts_update(void *config_, void *dims, void *opts_)
 
     return;
 }
-
-
 
 /************************************************
  * memory

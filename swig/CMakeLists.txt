@@ -36,6 +36,7 @@ endif()
 # SWIG does not support target_include_directories()
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/external")
+include_directories("${PROJECT_SOURCE_DIR}/external/casadi-py36-v3.4.0-64bit/casadi/include")
 include_directories("${PROJECT_SOURCE_DIR}/interfaces")
 # SWIG typemaps debug flag
 # set(CMAKE_SWIG_FLAGS "-debug-tmused")

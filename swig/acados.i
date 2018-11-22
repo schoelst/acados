@@ -33,7 +33,9 @@ typedef PyObject LangObject;
 #define NONE Py_None
 #endif
 
-%include "acados/utils/types.h"
+%include "casadi/casadi.i"
+
+//%include "acados/utils/types.h"
 
 %include "std_string.i"
 
@@ -54,6 +56,7 @@ namespace std {
     %template(map_si) map< string, vector<int> >;
 }
 
+
 #if defined(SWIGPYTHON)
 %{
 #define SWIG_FILE_WITH_INIT
@@ -70,9 +73,11 @@ namespace std {
     }
 }
 
-%include "conversions.i"
-%include "ocp_typemaps.i"
+%include "numpy.i"
+//%include "conversions.i"
+//%include "ocp_typemaps.i"
 
 %feature("autodoc", "3");
-%include "ocp_qp.i"
-%include "ocp_nlp.i"
+//%include "ocp_qp.i"
+//%include "ocp_nlp.i"
+%include "simulators.i"

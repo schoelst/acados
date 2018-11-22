@@ -9,10 +9,10 @@ class simulator
  public:
     /// Constructor. Takes a model, which is an acados::Function
     /// and a acados::Dict of options.
-    simulator(const Function& model, const Dict& options);
+    simulator(const Function& model, const Dict& options) {}
 
     /// Destructor.
-    ~simulator();
+    ~simulator() {}
 
     /// Simulate the model forward for one step.
     virtual Dict simulate(const Dict& in) const = 0;
@@ -30,7 +30,7 @@ class simulator
     virtual inline double step_size() const = 0;
 
     /// Returns Dict of current settings.
-    virtual inline Dict settings() const = 0;
+    virtual inline Dict settings() const { return {}; }
 
     /// Adjust the step size for simulation
     virtual inline void set_step_size(const double step_size) = 0;

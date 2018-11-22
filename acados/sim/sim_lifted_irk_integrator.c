@@ -39,8 +39,8 @@
 
 
 /************************************************
-* dims
-************************************************/
+ * dims
+ ************************************************/
 
 int sim_lifted_irk_dims_calculate_size()
 {
@@ -102,8 +102,8 @@ void sim_lifted_irk_get_nz(void *dims_, int *nz)
 }
 
 /************************************************
-* model
-************************************************/
+ * model
+ ************************************************/
 
 int sim_lifted_irk_model_calculate_size(void *config, void *dims)
 {
@@ -148,8 +148,8 @@ int sim_lifted_irk_model_set_function(void *model_, sim_function_t fun_type, voi
     return ACADOS_SUCCESS;
 }
 /************************************************
-* opts
-************************************************/
+ * opts
+ ************************************************/
 
 int sim_lifted_irk_opts_calculate_size(void *config_, void *dims)
 {
@@ -266,8 +266,8 @@ void sim_lifted_irk_opts_update(void *config_, void *dims, void *opts_)
 
 
 /************************************************
-* memory
-************************************************/
+ * memory
+ ************************************************/
 
 int sim_lifted_irk_memory_calculate_size(void *config, void *dims_, void *opts_)
 {
@@ -375,8 +375,8 @@ void *sim_lifted_irk_memory_assign(void *config, void *dims_, void *opts_, void 
 
 
 /************************************************
-* workspace
-************************************************/
+ * workspace
+ ************************************************/
 
 int sim_lifted_irk_workspace_calculate_size(void *config_, void *dims_, void *opts_)
 {
@@ -413,7 +413,7 @@ int sim_lifted_irk_workspace_calculate_size(void *config_, void *dims_, void *op
 
 
 static void *sim_lifted_irk_cast_workspace(void *config_, void *dims_, void *opts_,
-                                               void *raw_memory)
+                                           void *raw_memory)
 {
     sim_rk_opts *opts = opts_;
     sim_lifted_irk_dims *dims = (sim_lifted_irk_dims *) dims_;
@@ -469,8 +469,7 @@ static void *sim_lifted_irk_cast_workspace(void *config_, void *dims_, void *opt
 
     assign_and_advance_int(nx * ns, &workspace->ipiv, &c_ptr);
 
-    assert((char *) raw_memory +
-               sim_lifted_irk_workspace_calculate_size(config_, dims, opts_) >=
+    assert((char *) raw_memory + sim_lifted_irk_workspace_calculate_size(config_, dims, opts_) >=
            c_ptr);
 
     return (void *) workspace;
@@ -479,11 +478,10 @@ static void *sim_lifted_irk_cast_workspace(void *config_, void *dims_, void *opt
 
 
 /************************************************
-* functions
-************************************************/
+ * functions
+ ************************************************/
 
-int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *mem_,
-                       void *work_)
+int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *mem_, void *work_)
 {
     // typecasting
     sim_solver_config *config = config_;
@@ -494,8 +492,7 @@ int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *m
     sim_lifted_irk_dims *dims = (sim_lifted_irk_dims *) dims_;
 
     sim_lifted_irk_workspace *workspace =
-        (sim_lifted_irk_workspace *) sim_lifted_irk_cast_workspace(config, dims, opts,
-                                                                           work_);
+        (sim_lifted_irk_workspace *) sim_lifted_irk_cast_workspace(config, dims, opts, work_);
 
     int nx = dims->nx;
     int nu = dims->nu;
@@ -508,9 +505,10 @@ int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *m
     // assert - only use supported features
     assert(nz == 0 && "nz should be zero - DAEs are not (yet) supported for this integrator");
     assert(opts->output_z == false &&
-            "opts->output_z should be false - DAEs are not (yet) supported for this integrator");
-    assert(opts->sens_algebraic == false &&
-       "opts->sens_algebraic should be false - DAEs are not (yet) supported for this integrator");
+           "opts->output_z should be false - DAEs are not (yet) supported for this integrator");
+    assert(
+        opts->sens_algebraic == false &&
+        "opts->sens_algebraic should be false - DAEs are not (yet) supported for this integrator");
 
     int ii, jj, ss;
     double a;
@@ -527,6 +525,7 @@ int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *m
     int num_steps = opts->num_steps;
 
     double step = in->T / num_steps;
+    // TODO(FreyJo): this should be an option!
     int update_sens = memory->update_sens;
 
     int *ipiv = workspace->ipiv;
@@ -567,7 +566,7 @@ int sim_lifted_irk(void *config_, sim_in *in, sim_out *out, void *opts_, void *m
 
     if (opts->sens_adj)
     {
-        printf("NOT IMPLEMENTED YET - EXITING.");
+        printf("LIFTED_IRK with ADJOINT SENSITIVITIES - NOT IMPLEMENTED YET - EXITING.");
         exit(1);
     }
 

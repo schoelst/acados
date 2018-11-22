@@ -13,18 +13,18 @@
 #include "acados/ocp_nlp/ocp_nlp_sqp_rti.h"
 
 #include "acados_cpp/code_generator.hpp"
+#include "acados_cpp/function_generation.hpp"
 #include "acados_cpp/ocp_bounds.hpp"
 #include "acados_cpp/ocp_dimensions.hpp"
 #include "acados_cpp/utils.hpp"
-#include "acados_cpp/ocp_nlp/function_generation.hpp"
 
 #include "blasfeo/include/blasfeo_d_aux.h"
 
 namespace acados
 {
 using std::map;
-using std::vector;
 using std::string;
+using std::vector;
 
 ocp_nlp::ocp_nlp(std::vector<int> nx, std::vector<int> nu, std::vector<int> ng, std::vector<int> nh,
                  std::vector<int> ns)
@@ -46,8 +46,8 @@ ocp_nlp::ocp_nlp(std::vector<int> nx, std::vector<int> nu, std::vector<int> ng, 
     d_["ng"] = ng;
     d_["nh"] = nh;
     d_["ns"] = ns;
-    d_["ny"] = vector<int>(N+1);
-    d_["nz"] = vector<int>(N+1);
+    d_["ny"] = vector<int>(N + 1);
+    d_["nz"] = vector<int>(N + 1);
 
     int config_size = ocp_nlp_solver_config_calculate_size(N);
     void *raw_memory = malloc(config_size);
@@ -69,8 +69,7 @@ ocp_nlp::ocp_nlp(std::vector<int> nx, std::vector<int> nu, std::vector<int> ng, 
         dims_->nv[i] = d_["nx"][i] + d_["nu"][i] + d_["ns"][i];
         dims_->nx[i] = d_["nx"][i];
         dims_->nu[i] = d_["nu"][i];
-        dims_->ni[i] = d_["nbx"][i] + d_["nbu"][i] + d_["ng"][i] +
-                       d_["nh"][i];
+        dims_->ni[i] = d_["nbx"][i] + d_["nbu"][i] + d_["ng"][i] + d_["nh"][i];
     }
 
     for (int i = 0; i <= N; ++i)
@@ -198,11 +197,10 @@ void ocp_nlp::initialize_solver(std::string solver_name, std::map<std::string, o
 
     squeeze_dimensions(cached_bounds);
 
-    ocp_nlp_dims_initialize(config_.get(), d_["nx"].data(), d_["nu"].data(),
-                            d_["ny"].data(), d_["nbx"].data(),
-                            d_["nbu"].data(), d_["ng"].data(),
-                            d_["nh"].data(), std::vector<int>(N + 1, 0).data(),
-                            d_["ns"].data(), d_["nz"].data(), dims_.get());
+    ocp_nlp_dims_initialize(config_.get(), d_["nx"].data(), d_["nu"].data(), d_["ny"].data(),
+                            d_["nbx"].data(), d_["nbu"].data(), d_["ng"].data(), d_["nh"].data(),
+                            std::vector<int>(N + 1, 0).data(), d_["ns"].data(), d_["nz"].data(),
+                            dims_.get());
 
     solver_options_.reset(ocp_nlp_opts_create(config_.get(), dims_.get()));
 
@@ -241,20 +239,17 @@ void ocp_nlp::set_field(string field, int stage, vector<double> v)
     if (field == "lbx" || field == "ubx")
     {
         if (v.size() != (size_t) d_["nx"].at(stage))
-            throw std::invalid_argument("Expected size " +
-                                        std::to_string(d_["nx"].at(stage)) + " but got " +
-                                        std::to_string(v.size()) + " instead.");
+            throw std::invalid_argument("Expected size " + std::to_string(d_["nx"].at(stage)) +
+                                        " but got " + std::to_string(v.size()) + " instead.");
 
         cached_bounds[field].at(stage) = v;
     }
     else if (field == "lbu" || field == "ubu")
     {
-        if (stage == N)
-            return;
+        if (stage == N) return;
         if (v.size() != (size_t) d_["nu"].at(stage))
-            throw std::invalid_argument("Expected size " +
-                                        std::to_string(d_["nu"].at(stage)) + " but got " +
-                                        std::to_string(v.size()) + " instead.");
+            throw std::invalid_argument("Expected size " + std::to_string(d_["nu"].at(stage)) +
+                                        " but got " + std::to_string(v.size()) + " instead.");
 
         cached_bounds[field].at(stage) = v;
     }
@@ -267,8 +262,9 @@ void ocp_nlp::set_field(string field, int stage, vector<double> v)
 static bool is_valid_nls_residual(const casadi::Function &r)
 {
     if (r.n_in() != 1 && r.n_in() != 2)
-        throw std::invalid_argument("An NLS residual should have max 2 inputs: states and "
-                                    "controls.");
+        throw std::invalid_argument(
+            "An NLS residual should have max 2 inputs: states and "
+            "controls.");
     if (r.n_out() != 1)
         throw std::invalid_argument("An NLS residual function should have 1 output.");
 
@@ -278,8 +274,7 @@ static bool is_valid_nls_residual(const casadi::Function &r)
 void ocp_nlp::set_stage_cost(std::vector<double> C, std::vector<double> y_ref,
                              std::vector<double> W)
 {
-    for (int i = 0; i < N; ++i)
-        set_stage_cost(i, C, y_ref, W);
+    for (int i = 0; i < N; ++i) set_stage_cost(i, C, y_ref, W);
 }
 
 void ocp_nlp::set_terminal_cost(std::vector<double> C, std::vector<double> y_ref,
@@ -291,13 +286,13 @@ void ocp_nlp::set_terminal_cost(std::vector<double> C, std::vector<double> y_ref
 void ocp_nlp::set_stage_cost(int stage, std::vector<double> C, std::vector<double> y_ref,
                              std::vector<double> W)
 {
-    if (C.size() % (d_["nx"][stage]+d_["nu"][stage]+d_["ns"][stage]) != 0)
+    if (C.size() % (d_["nx"][stage] + d_["nu"][stage] + d_["ns"][stage]) != 0)
         throw std::invalid_argument("Linear least squares matrix has wrong dimensions.");
 
-    auto ny = C.size() / (d_["nx"][stage]+d_["nu"][stage]);
+    auto ny = C.size() / (d_["nx"][stage] + d_["nu"][stage]);
     d_["ny"][stage] = ny;
 
-    if (W.size() != ny*ny)
+    if (W.size() != ny * ny)
         throw std::invalid_argument("Linear least squares weighting matrix has wrong dimensions.");
 
     plan_->nlp_cost[stage] = LINEAR_LS;
@@ -319,7 +314,7 @@ void ocp_nlp::set_stage_cost(int stage, std::vector<double> C, std::vector<doubl
     ocp_nlp_cost_ls_model *stage_cost_ls = (ocp_nlp_cost_ls_model *) nlp_->cost[stage];
 
     // Cyt
-    blasfeo_pack_tran_dmat(ny, nu, &C.data()[ny*nx], ny, &stage_cost_ls->Cyt, 0, 0);
+    blasfeo_pack_tran_dmat(ny, nu, &C.data()[ny * nx], ny, &stage_cost_ls->Cyt, 0, 0);
     blasfeo_pack_tran_dmat(ny, nx, C.data(), ny, &stage_cost_ls->Cyt, nu, 0);
 
     // y_ref
@@ -327,16 +322,14 @@ void ocp_nlp::set_stage_cost(int stage, std::vector<double> C, std::vector<doubl
 
     // W
     blasfeo_pack_dmat(ny, ny, W.data(), ny, &stage_cost_ls->W, 0, 0);
-
 }
 
-void ocp_nlp::set_stage_cost(const casadi::Function& r, vector<double> y_ref, vector<double> W)
+void ocp_nlp::set_stage_cost(const casadi::Function &r, vector<double> y_ref, vector<double> W)
 {
-    for (int i = 0; i < N; ++i)
-        set_stage_cost(i, r, y_ref, W);
+    for (int i = 0; i < N; ++i) set_stage_cost(i, r, y_ref, W);
 }
 
-void ocp_nlp::set_stage_cost(int stage, const casadi::Function& residual, vector<double> y_ref,
+void ocp_nlp::set_stage_cost(int stage, const casadi::Function &residual, vector<double> y_ref,
                              vector<double> W)
 {
     if (!is_valid_nls_residual(residual))
@@ -344,7 +337,7 @@ void ocp_nlp::set_stage_cost(int stage, const casadi::Function& residual, vector
 
     int ny = residual.numel_out(0);
 
-    if (W.size() != ny*ny)
+    if (W.size() != ny * ny)
         throw std::invalid_argument("Linear least squares weighting matrix has wrong dimensions.");
 
     d_["ny"][stage] = ny;
@@ -356,15 +349,14 @@ void ocp_nlp::set_stage_cost(int stage, const casadi::Function& residual, vector
     int dims_size = ocp_nlp_cost_nls_dims_calculate_size(config_->cost[stage]);
     void *raw_memory = malloc(dims_size);
     dims_->cost[stage] = ocp_nlp_cost_nls_dims_assign(config_->cost[stage], raw_memory);
-    ocp_nlp_cost_nls_dims_initialize(config_->cost[stage], dims_->cost[stage],
-                                     d_["nx"][stage], d_["nu"][stage], d_["ny"][stage],
-                                     d_["ns"][stage]);
+    ocp_nlp_cost_nls_dims_initialize(config_->cost[stage], dims_->cost[stage], d_["nx"][stage],
+                                     d_["nu"][stage], d_["ny"][stage], d_["ns"][stage]);
 
-    int model_size = ocp_nlp_cost_nls_model_calculate_size(config_->cost[stage],
-                                                           dims_->cost[stage]);
+    int model_size =
+        ocp_nlp_cost_nls_model_calculate_size(config_->cost[stage], dims_->cost[stage]);
     raw_memory = malloc(model_size);
-    nlp_->cost[stage] = ocp_nlp_cost_nls_model_assign(config_->cost[stage], dims_->cost[stage],
-                                                      raw_memory);
+    nlp_->cost[stage] =
+        ocp_nlp_cost_nls_model_assign(config_->cost[stage], dims_->cost[stage], raw_memory);
 
     module_["nls_residual"] = generate_nls_residual(residual);
 
@@ -374,7 +366,7 @@ void ocp_nlp::set_stage_cost(int stage, const casadi::Function& residual, vector
     blasfeo_pack_dvec(ny, y_ref.data(), &model->y_ref, 0);
 }
 
-void ocp_nlp::set_terminal_cost(const casadi::Function& r, vector<double> y_ref, vector<double> W)
+void ocp_nlp::set_terminal_cost(const casadi::Function &r, vector<double> y_ref, vector<double> W)
 {
     set_stage_cost(N, r, y_ref, W);
 }
@@ -403,7 +395,7 @@ void ocp_nlp::set_dynamics(const casadi::Function &model, std::map<std::string, 
 
     if (!options.count("step")) throw std::invalid_argument("Expected 'step' as an option.");
 
-    std::fill(nlp_->Ts, nlp_->Ts+N, to_double(options["step"]));
+    std::fill(nlp_->Ts, nlp_->Ts + N, to_double(options["step"]));
 
     sim_solver_plan sim_plan;
     if (to_string(options.at("integrator")) == "rk4")
@@ -419,9 +411,9 @@ void ocp_nlp::set_dynamics(const casadi::Function &model, std::map<std::string, 
         int dims_size = ocp_nlp_dynamics_cont_dims_calculate_size(config_->dynamics[i]);
         void *raw_memory = malloc(dims_size);
         dims_->dynamics[i] = ocp_nlp_dynamics_cont_dims_assign(config_->dynamics[i], raw_memory);
-        ocp_nlp_dynamics_cont_dims_initialize(config_->dynamics[i], dims_->dynamics[i],
-                                              d_["nx"][i], d_["nu"][i],
-                                              d_["nx"][i + 1], d_["nu"][i + 1], d_["nz"][i]);
+        ocp_nlp_dynamics_cont_dims_initialize(config_->dynamics[i], dims_->dynamics[i], d_["nx"][i],
+                                              d_["nu"][i], d_["nx"][i + 1], d_["nu"][i + 1],
+                                              d_["nz"][i]);
 
         int model_size =
             ocp_nlp_dynamics_cont_model_calculate_size(config_->dynamics[i], dims_->dynamics[i]);
@@ -439,7 +431,6 @@ void ocp_nlp::set_dynamics(const casadi::Function &model, std::map<std::string, 
     for (int stage = 0; stage < N; ++stage)
         nlp_set_model_in_stage(config_.get(), nlp_.get(), stage, "expl_vde_for",
                                (void *) module_["expl_vde_for"].as_external_function());
-
 };
 
 void ocp_nlp::set_bound(std::string bound, int stage, std::vector<double> new_bound)
@@ -561,10 +552,7 @@ void ocp_nlp::set_bound_indices(std::string bound, int stage, std::vector<int> i
     }
 }
 
-int ocp_nlp::num_stages()
-{
-    return N;
-}
+int ocp_nlp::num_stages() { return N; }
 
 void ocp_nlp::generate_s_function(string file_name)
 {

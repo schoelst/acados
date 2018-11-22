@@ -5,31 +5,24 @@
 #include <string>
 #include <vector>
 
-
-#include "acados/utils/types.h"
 #include "acados_c/sim_interface.h"
-
 
 #include "acados_cpp/ocp_nlp/casadi_module.hpp"
 #include "acados_cpp/simulator.hpp"
 #include "acados_cpp/types.hpp"
 
-// TODO(oj): try to only use C interface, i.e. remove line above and use void pointers
-// @tobi: or what do u think?
 namespace acados
 {
 class integrator : public simulator
 {
  public:
-    // TODO default value of options invalid! Either provide step or make step mandatory argument
-    integrator(const Function& model, Dict options = {});
+    explicit integrator(const Function& model, const Dict& options = {});
 
     ~integrator();
 
     std::vector<double> integrate(std::vector<double> x, std::vector<double> u = {}) const;
-    Dict integrate(const Dict& in = {}) const { return in; }
-    // std::map<std::string, std::vector<double>> integrate(std::map<std::string,
-    // std::vector<double>> in = {}) {return in;}
+    Dict integrate(const Dict& input = {}) const { return input; }
+    Dict simulate(const Dict& input) const { return integrate(input); }
 
     void print_settings() const;
 
@@ -41,6 +34,8 @@ class integrator : public simulator
 
  private:
     void set_model(const Function& model, const Dict& options = {});
+
+    casadi::Function explicit2implicit(const casadi::Function& model);
 
     sim_solver_config* config_;
     sim_rk_opts* opts_;
@@ -57,8 +52,6 @@ class integrator : public simulator
 
     model_t model_type_;
     bool use_MX_;
-
-    std::map<std::string, casadi_module> module_;
 };
 
 }  // namespace acados

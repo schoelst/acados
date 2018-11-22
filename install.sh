@@ -37,8 +37,8 @@ git submodule update --recursive --init
 pushd swig
 ./autogen.sh
 ./configure --prefix=$(pwd)/swig_install --enable-silent-rules
-make
-make install -j4 -l4 > /dev/null # quiet installation
+make -j4 -l4
+make install > /dev/null # quiet installation
 export PATH=$(pwd):$PATH
 popd # swig
 popd # external

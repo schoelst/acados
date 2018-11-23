@@ -160,18 +160,7 @@ integrator::integrator(const Function &model, const Dict &options) : simulator(m
     // check integrator type - default is ERK
     if (options.count("integrator"))
     {
-        if ((string) options.at("integrator") == "ERK")
-            sim_plan_.sim_solver = ERK;
-        else if ((string) options.at("integrator") == "IRK")
-        {
-            sim_plan_.sim_solver = IRK;
-        }
-        else if ((string) options.at("integrator") == "LIFTED_IRK")
-        {
-            sim_plan_.sim_solver = LIFTED_IRK;
-        }
-        else
-            throw std::invalid_argument("Invalid integrator.");
+        sim_plan_.sim_solver = (integrator_t)(int) options.at("integrator");
     }
     else  // default integrator
         sim_plan_.sim_solver = ERK;
@@ -213,7 +202,7 @@ integrator::integrator(const Function &model, const Dict &options) : simulator(m
 
     if (options.count("num_steps")) opts_->num_steps = (int) options.at("num_steps");
 
-    if (options.count("stages")) opts_->ns = (int) options.at("stages");
+    if (options.count("stages")) opts_->ns = (int) options.at("num_stages");
 
 
     if (options.count("model_type"))
@@ -453,7 +442,7 @@ Dict integrator::settings() const
             {"model_type", model_type_},
             {"integrator", sim_plan_.sim_solver},
             {"use_MX", use_MX_},
-            {"ns", opts_->ns},
+            {"num_stages", opts_->ns},
             {"num_steps", opts_->num_steps},
             {"newton_iter", opts_->newton_iter},
             {"sens_forw", opts_->sens_forw},

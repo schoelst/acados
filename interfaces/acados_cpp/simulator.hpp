@@ -9,6 +9,7 @@ class simulator
  public:
     /// Constructor. Takes a model, which is an acados::Function
     /// and a acados::Dict of options.
+    /// simulator is the common base class of integrator and discrete_model
     simulator(const Function& model, const Dict& options) {}
 
     /// Destructor.

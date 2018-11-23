@@ -216,6 +216,15 @@ void sim_in_set_u(sim_solver_config *config, void *dims, double *u, sim_in *in)
 }
 
 
+void sim_in_set_z(sim_solver_config *config, void *dims, double *z, sim_in *in)
+{
+    int nz;
+    config->get_nz(dims, &nz);
+    int ii;
+    for (ii = 0; ii < nz; ii++) in->z[ii] = z[ii];
+    return;
+}
+
 
 void sim_in_set_Sx(sim_solver_config *config, void *dims, double *Sx, sim_in *in)
 {
@@ -235,6 +244,18 @@ void sim_in_set_Su(sim_solver_config *config, void *dims, double *Su, sim_in *in
     config->get_nu(dims, &nu);
     int ii;
     for (ii = 0; ii < nx * nu; ii++) in->S_forw[nx * nx + ii] = Su[ii];
+    return;
+}
+
+
+
+void sim_in_set_S_adj(sim_solver_config *config, void *dims, double *S_adj, sim_in *in)
+{
+    int nx, nu;
+    config->get_nx(dims, &nx);
+    config->get_nu(dims, &nu);
+    int ii;
+    for (ii = 0; ii < nx + nu; ii++) in->S_adj[ii] = S_adj[ii];
     return;
 }
 
@@ -286,6 +307,15 @@ void sim_out_get_Sun(sim_solver_config *config, void *dims, sim_out *out, double
     config->get_nu(dims, &nu);
     int ii;
     for (ii = 0; ii < nx * nu; ii++) Sun[ii] = out->S_forw[nx * nx + ii];
+    return;
+}
+
+
+void sim_out_get_zn(sim_solver_config *config, void *dims, sim_out *out, double *zn)
+{
+    int nz;
+    config->get_nz(dims, &nz);
+    for (int ii = 0; ii < nz; ii++) zn[ii] = out->zn[ii];
     return;
 }
 

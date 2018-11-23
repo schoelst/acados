@@ -16,6 +16,32 @@ namespace acados
 class integrator : public simulator
 {
  public:
+    /**
+     *
+     * model: a CasADi function that contains the system's ODE.
+     *
+     * options:
+     *   MANDATORY ARGUMENTS:
+     *     'step_size': integrator step size, double
+     *   OPTIONAL ARGUMENTS:
+     *     'model_type': type of provided model, model_t default EXPLICIT
+     *                   available: [EXPLICIT, IMPLICIT, GNSF_MODEL]
+     *     'integrator': integrator type, integrator_t, default ERK
+     *                   available: [ERK, IRK, GNSF, LIFTED_IRK]
+     *     'use_MX': use MX symbolics, bool, default false
+     *     'num_stages': number of stages, size_t, default depends on integrator type
+     *     'num_steps': number of steps, size_t, default 1
+     *     'newton_iter': number of newton iterations, size_t, default 3
+     *     'output_z': output value of algebraic variables, bool, default depends on integrator type
+     *     'sens_forw': propagate forward sensitivities, bool, default false
+     *     'sens_adj': propagate adjoint sensitivities, bool, default false
+     *     'sens_hess': propagate second order sensitivities, bool, default false
+     *     'sens_algebraic': propagate sensitivities of algebraic variables, bool, default false
+     *     'jac_reuse': jacobians are reused during newton iterations.
+     *                  For sensitivity propagation new jacobian evaluations are used.
+     *
+     *
+     */
     explicit integrator(const Function& model, const Dict& options);
 
     ~integrator();

@@ -16,7 +16,7 @@ namespace acados
 class integrator : public simulator
 {
  public:
-    explicit integrator(const Function& model, const Dict& options = {});
+    explicit integrator(const Function& model, const Dict& options);
 
     ~integrator();
 

@@ -160,18 +160,7 @@ integrator::integrator(const Function &model, const Dict &options) : simulator(m
     // check integrator type - default is ERK
     if (options.count("integrator"))
     {
-        if ((string) options.at("integrator") == "ERK")
-            sim_plan_.sim_solver = ERK;
-        else if ((string) options.at("integrator") == "IRK")
-        {
-            sim_plan_.sim_solver = IRK;
-        }
-        else if ((string) options.at("integrator") == "LIFTED_IRK")
-        {
-            sim_plan_.sim_solver = LIFTED_IRK;
-        }
-        else
-            throw std::invalid_argument("Invalid integrator.");
+        sim_plan_.sim_solver = (integrator_t)(int) options.at("integrator");
     }
     else  // default integrator
         sim_plan_.sim_solver = ERK;

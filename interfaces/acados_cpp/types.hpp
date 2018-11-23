@@ -1,5 +1,6 @@
 #pragma once
 
+#include "acados_c/sim_interface.h"
 #include "casadi/casadi.hpp"
 
 namespace acados
@@ -16,5 +17,7 @@ typedef enum
     IMPLICIT,
     GNSF_MODEL
 } model_t;
+
+typedef sim_solver_t integrator_t;
 
 }  // namespace acados

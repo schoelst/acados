@@ -450,22 +450,95 @@ void integrator::set_model(const Function &model, const Dict &options)
 }
 
 
-void integrator::print_settings() const
+Dict integrator::settings() const
 {
-    std::cout << "\nstep_size \t: " << in_->T << "\nmodel_type \t: " << model_type_
-              << "\nintegrator \t: " << sim_plan_.sim_solver << "\nuse_MX \t\t: " << use_MX_
-              << "\nns \t\t: " << opts_->ns << "\nnum_steps \t: " << opts_->num_steps
-              << "\nnewton_iter \t: " << opts_->newton_iter
-              << "\nsens_forw \t: " << opts_->sens_forw << "\nsens_adj \t: " << opts_->sens_adj
-              << "\nsens_hess \t: " << opts_->sens_hess
-              << "\nsens_algebraic \t: " << opts_->sens_algebraic
-              << "\njac_reuse \t: " << opts_->jac_reuse << std::endl;
+    return {{"step_size", in_->T},
+            {"model_type", model_type_},
+            {"integrator", sim_plan_.sim_solver},
+            {"use_MX", use_MX_},
+            {"ns", opts_->ns},
+            {"num_steps", opts_->num_steps},
+            {"newton_iter", opts_->newton_iter},
+            {"sens_forw", opts_->sens_forw},
+            {"sens_adj", opts_->sens_adj},
+            {"sens_hess", opts_->sens_hess},
+            {"sens_algebraic", opts_->sens_algebraic},
+            {"jac_reuse", opts_->jac_reuse}};
 }
-
-
 
 void integrator::set_step_size(const double step_size) { in_->T = step_size; }
 
+
+Dict integrator::integrate(const Dict &input) const
+{
+    vector<double> x, u, z, xdot;
+    vector<double> Sx, Su;  // TODO(tobi) is this the right data type?
+
+    if (input.count("x"))
+        x = (vector<double>) input.count("x");
+    else
+        throw std::invalid_argument("Missing input x.");
+
+    if (input.count("u")) u = (vector<double>) input.count("u");
+    if (input.count("z")) z = (vector<double>) input.count("z");
+    // optional paramters
+    if (input.count("xdot"))
+    {
+        xdot = (vector<double>) input.count("xdot");
+        if (xdot.size() != nx_) throw std::invalid_argument("Input xdot has wrong size.");
+    }
+    if (input.count("Sx"))
+    {
+        Sx = (vector<double>) input.count("Sx");
+        if (Sx.size() != nx_) throw std::invalid_argument("Input Sx has wrong size.");
+    }
+    else
+    {
+        // TODO(tobi) set unit matrix
+    }
+    if (input.count("Su"))
+    {
+        Su = (vector<double>) input.count("Su");
+        if (Su.size() != nu_) throw std::invalid_argument("Input Su has wrong size.");
+    }
+    else
+    {
+        // TODO(tobi) set unit matrix
+    }
+
+    // check dimensions
+    if (x.size() != nx_) throw std::invalid_argument("Input x has wrong size.");
+    if (u.size() != nu_) throw std::invalid_argument("Input u has wrong size.");
+    if (z.size() != nz_) throw std::invalid_argument("Input z has wrong size.");
+
+    // mandatory parameters
+    sim_in_set_x(config_, dims_, x.data(), in_);
+    sim_in_set_u(config_, dims_, u.data(), in_);
+    // TODO(jonny) please implement sim_in_set_z
+    // sim_in_set_z(config_, dims_, z.data(), in_);
+
+    // optional parameters
+    sim_in_set_xdot(config_, dims_, xdot.data(), in_);
+    sim_in_set_Sx(config_, dims_, Sx.data(), in_);
+    sim_in_set_Su(config_, dims_, Su.data(), in_);
+
+    // integrate
+    int acados_return = sim_solve(solver_, in_, out_);
+    if (acados_return != 0) throw std::runtime_error("integration failed");
+
+    // get results
+    sim_out_get_xn(config_, dims_, out_, x.data());
+    Dict res = {{"x", x}};
+    if (opts_->sens_forw)
+    {
+        sim_out_get_Sxn(config_, dims_, out_, Sx.data());
+        sim_out_get_Sun(config_, dims_, out_, Su.data());
+        res["Sx"] = Sx;
+        res["Su"] = Su;
+    }
+
+    return res;
+}
 
 std::vector<double> integrator::integrate(std::vector<double> x, std::vector<double> u) const
 {

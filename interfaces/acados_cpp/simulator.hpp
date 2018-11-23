@@ -41,7 +41,7 @@ class simulator
 
 };  // class simulator
 
-class discrete_model : private simulator
+class discrete_model : public simulator
 {
  public:
     discrete_model(const Function& model, const Dict& options);

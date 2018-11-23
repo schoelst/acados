@@ -1,8 +1,8 @@
 #!/bin/bash -xe
 
 # Install dependencies
-#sudo add-apt-repository ppa:george-edison55/cmake-3.x
-#sudo apt-add-repository ppa:octave/stable
+# sudo add-apt-repository ppa:george-edison55/cmake-3.x
+# sudo apt-add-repository ppa:octave/stable
 sudo apt-get update
 sudo apt-get install octave liboctave-dev
 sudo apt-get install libgsl0-dev liblapack-dev libopenblas-dev libeigen3-dev python3-tk automake libpcre3-dev git cmake python3-dev
@@ -21,7 +21,7 @@ tar -xf casadi-linux-py36-v3.4.0-64bit.tar.gz -C casadi-py36-v3.4.0-64bit
 export CASADIPATH=$(pwd)/casadi-py36-v3.4.0-64bit
 export PYTHONPATH=$CASADIPATH:$PYTHONPATH
 # will not work with custom install dir
-export PYTHONPATH=/usr/local/lib:$PYTHONPATH
+export PYTHONPATH=~/.local/lib:$PYTHONPATH
 
 wget -q -nc http://files.casadi.org/download/3.4.0/casadi-linux-matlabR2014b-v3.4.0.tar.gz
 mkdir -p casadi-matlabR2014b-v3.4.0
@@ -46,7 +46,7 @@ popd # external
 # Build acados
 mkdir -p build
 pushd build
-cmake -D SWIG_MATLAB=1 -D SWIG_PYTHON=1 ..
+cmake -D SWIG_MATLAB=1 -D SWIG_PYTHON=1 -D ACADOS_INSTALL_DIR=~/.local ..
 make -j4 -l4
-sudo make install
+make install
 popd # build

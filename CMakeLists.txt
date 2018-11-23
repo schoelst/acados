@@ -29,6 +29,10 @@ project(acados LANGUAGES C CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+# set installation directory
+set(CMAKE_INSTALL_PREFIX ${ACADOS_INSTALL_DIR})
+
+# store compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set up build type

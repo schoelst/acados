@@ -458,7 +458,7 @@ void integrator::set_step_size(const double step_size) { in_->T = step_size; }
 Dict integrator::integrate(const Dict &input) const
 {
     vector<double> x, u, z, xdot;
-    vector<double> Sx, Su, S_adj;      // column major matrices
+    vector<double> Sx, Su, S_adj;  // column major matrices
 
 
     /* CHECK INPUTS AND SET THEM IN C INTEGRATOR */
@@ -506,8 +506,7 @@ Dict integrator::integrate(const Dict &input) const
         {
             // default unit matrix
             Sx = vector<double>(0, nx_ * nx_);
-            for (int ii = 0; ii < nx_; ++ii)
-                Sx[(nx_+1) * ii] = 1.0;
+            for (size_t ii = 0; ii < nx_; ++ii) Sx[(nx_ + 1) * ii] = 1.0;
         }
         if (input.count("Su"))
         {
@@ -530,7 +529,8 @@ Dict integrator::integrate(const Dict &input) const
         if (input.count("S_adj"))
         {
             S_adj = (vector<double>) input.count("S_adj");
-            if (S_adj.size() != nx_ + nu_) throw std::invalid_argument("Input S_adj has wrong size.");
+            if (S_adj.size() != nx_ + nu_)
+                throw std::invalid_argument("Input S_adj has wrong size.");
         }
         else
         {

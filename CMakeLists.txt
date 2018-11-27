@@ -29,6 +29,14 @@ project(acados LANGUAGES C CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+# set installation directory
+if(NOT ACADOS_INSTALL_DIR)
+  set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local)
+else()
+  set(CMAKE_INSTALL_PREFIX ${ACADOS_INSTALL_DIR})
+endif()
+message(STATUS "Installation directory is ${CMAKE_INSTALL_PREFIX}")
+
 # store compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -60,18 +68,11 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 
-# set installation directory
-if(NOT ACADOS_INSTALL_DIR)
-  set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local)
-else()
-  set(CMAKE_INSTALL_PREFIX ${ACADOS_INSTALL_DIR})
-endif()
-message(STATUS "Installation directory is ${CMAKE_INSTALL_PREFIX}")
-
 # Rpath handling, see https://cmake.org/Wiki/CMake_RPATH_handling#What_is_RPATH_.3F
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH "$ENV{CASADIPATH}/casadi")
+set(CASADIPATH $ENV{CASADIPATH})
+set(CMAKE_INSTALL_RPATH "${CASADIPATH}/casadi")
 
 if(NOT CMAKE_C_COMPILER_ID MATCHES "MSVC")
     set(ACADOS_WITH_HPMPC ON CACHE BOOL "Add HPMPC solver")
@@ -91,6 +92,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES "dSpace")
 endif()
 
 set(EXTERNAL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
+
 # Configure acados
 add_subdirectory(acados)
 

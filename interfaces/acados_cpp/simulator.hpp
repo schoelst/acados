@@ -4,28 +4,19 @@
 
 namespace acados
 {
-class simulator
+class Simulator
 {
  public:
     /// Constructor. Takes a model, which is an acados::Function
     /// and a acados::Dict of options.
-    /// simulator is the common base class of integrator and discrete_model
-    simulator(const Function& model, const Dict& options) {}
+    /// Simulator is the common base class of integrator and discrete_model
+    Simulator(const Function& model, const Dict& options) {}
 
     /// Destructor.
-    ~simulator() {}
+    virtual ~Simulator() {}
 
     /// Simulate the model forward for one step.
     virtual Dict simulate(const Dict& input) const = 0;
-
-    /// Print settings to std::out.
-    virtual inline void print_settings() const
-    {
-        for (auto const& s : settings())
-        {
-            std::cout << s.first << "\t : " << s.second << std::endl;
-        }
-    }
 
     /// Returns the current step size.
     virtual inline double step_size() const = 0;
@@ -35,11 +26,20 @@ class simulator
 
     /// Adjust the step size for simulation
     virtual inline void set_step_size(const double step_size) = 0;
+    /// Print settings to std::out.
+    virtual inline void print_settings() const
+    {
+        for (auto const& s : settings())
+        {
+            std::cout << s.first << "\t : " << s.second << std::endl;
+        }
+    }
+
 
  protected:
     // member variables
 
 
-};  // class simulator
+};  // class Simulator
 
 }  // namespace acados

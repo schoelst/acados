@@ -4,11 +4,11 @@
 
 namespace acados
 {
-class discrete_model : public simulator
+class DiscreteModel : public Simulator
 {
  public:
-    discrete_model(const Function& model, const Dict& options);
-    ~discrete_model();
+    DiscreteModel(const Function& model, const Dict& options);
+    ~DiscreteModel();
 
     /// Simulate the model forward for one step.
     Dict simulate(const Dict& input) const;
@@ -25,6 +25,6 @@ class discrete_model : public simulator
  private:
     // member variables
 
-};  // class discrete_model
+};  // class DiscreteModel
 
 }  // namespace acados

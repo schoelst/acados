@@ -13,7 +13,7 @@
 
 namespace acados
 {
-class integrator : public simulator
+class Integrator : public Simulator
 {
  public:
     /**
@@ -42,15 +42,15 @@ class integrator : public simulator
      *
      *
      */
-    explicit integrator(const Function& model, const Dict& options);
+    Integrator(const Function& model, const Dict& options);
+    // Integrator(const Integrator& other);
 
-    ~integrator();
+    ~Integrator();
 
     std::vector<double> integrate(std::vector<double> x, std::vector<double> u = {}) const;
     Dict integrate(const Dict& input = {}) const;
     Dict simulate(const Dict& input) const { return integrate(input); }
 
-    void print_settings() const;
     Dict settings() const;
 
     void set_step_size(const double step_size);

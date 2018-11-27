@@ -146,7 +146,7 @@ static bool check_model(const Function &model, model_t model_type, const bool us
 
 
 /* CONSTRUCTOR */
-integrator::integrator(const Function &model, const Dict &options) : simulator(model, options)
+Integrator::Integrator(const Function &model, const Dict &options) : Simulator(model, options)
 {
     if (options.count("model_type"))
         model_type_ = (model_t)(int) options.at("model_type");  // This is not a nice interface
@@ -242,7 +242,7 @@ integrator::integrator(const Function &model, const Dict &options) : simulator(m
 }
 
 
-casadi::Function integrator::explicit2implicit(const casadi::Function &model)
+casadi::Function Integrator::explicit2implicit(const casadi::Function &model)
 {
     casadi::Function integrator_model;
 
@@ -284,7 +284,7 @@ casadi::Function integrator::explicit2implicit(const casadi::Function &model)
 }
 
 
-void integrator::set_model(const Function &model, const Dict &options)
+void Integrator::set_model(const Function &model, const Dict &options)
 {
     string autogen_dir = "_autogen";
 
@@ -436,7 +436,7 @@ void integrator::set_model(const Function &model, const Dict &options)
 }
 
 
-Dict integrator::settings() const
+Dict Integrator::settings() const
 {
     return {{"step_size", in_->T},
             {"model_type", model_type_},
@@ -452,10 +452,10 @@ Dict integrator::settings() const
             {"jac_reuse", opts_->jac_reuse}};
 }
 
-void integrator::set_step_size(const double step_size) { in_->T = step_size; }
+void Integrator::set_step_size(const double step_size) { in_->T = step_size; }
 
 
-Dict integrator::integrate(const Dict &input) const
+Dict Integrator::integrate(const Dict &input) const
 {
     vector<double> x, u, z, xdot;
     vector<double> Sx, Su, S_adj;  // column major matrices
@@ -563,7 +563,7 @@ Dict integrator::integrate(const Dict &input) const
     return res;
 }
 
-std::vector<double> integrator::integrate(std::vector<double> x, std::vector<double> u) const
+std::vector<double> Integrator::integrate(std::vector<double> x, std::vector<double> u) const
 {
     // TODO(tobi): use in/output dict
     /*
@@ -612,7 +612,7 @@ std::vector<double> integrator::integrate(std::vector<double> x, std::vector<dou
 
 
 /* DESTRUCTOR */
-integrator::~integrator()
+Integrator::~Integrator()
 {
     sim_config_free(config_);
     sim_dims_free(dims_);

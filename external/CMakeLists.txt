@@ -57,4 +57,14 @@ if (ACADOS_WITH_OOQP)
     include(external/ooqp)
 endif()
 
-add_subdirectory(googletest)
+if (UNIT_TESTS)
+    # gtest defaults to python 2
+    find_package(PythonInterp 3 REQUIRED)
+    find_package(PythonLibs 3 REQUIRED)
+    add_subdirectory(googletest)
+    mark_as_advanced(
+        BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
+        gmock_build_tests gtest_build_samples gtest_build_tests
+        gtest_disable_pthreads gtest_force_shared_crt gtest_hide_internal_symbols
+    )
+endif()

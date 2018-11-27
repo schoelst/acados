@@ -1,7 +1,13 @@
-from acados import *
 import time
 import numpy as np
+print("imported other dependencies")
+
+from acados import integrator
+print("imported acados integrator")
+from acados import *
+print("imported acados")
 from models import pendulum_model, chen_model
+print("imported models")
 
 # get model
 ode_fun, nx, nu, impl_ode_fun = pendulum_model()

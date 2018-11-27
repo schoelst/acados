@@ -29,9 +29,6 @@ project(acados LANGUAGES C CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
-# set installation directory
-set(CMAKE_INSTALL_PREFIX ${ACADOS_INSTALL_DIR})
-
 # store compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -62,6 +59,13 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 endif()
 
+
+# set installation directory
+if(NOT ACADOS_INSTALL_DIR)
+  set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local)
+else()
+  set(CMAKE_INSTALL_PREFIX ${ACADOS_INSTALL_DIR})
+endif()
 message(STATUS "Installation directory is ${CMAKE_INSTALL_PREFIX}")
 
 # Rpath handling, see https://cmake.org/Wiki/CMake_RPATH_handling#What_is_RPATH_.3F

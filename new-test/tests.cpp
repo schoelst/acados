@@ -17,9 +17,13 @@ class IntegratorTest : public ::testing::Test
     {
         // You can do set-up work for each test here.
         options = Dict({{"step_size", 0.1}});
-        MX x(1, 1);
-        vector<MX> io{x};
-        ode_fun = Function("test", io, io, {"x"}, {"xdot"});
+        // puck model
+        MX m(1.), I(0.5);
+        MX px, py, theta, vx, vy, omega, ax, ay, alpha, Fx, Fy, Frot;
+        MX x = MX::vertcat({px, py, theta, vx, vy, omega});
+        MX u = MX::vertcat({Fx, Fy, Frot});
+        MX xdot = MX::vertcat({vx, vy, omega, Fx / m, Fy / m, Frot / I});
+        ode_fun = Function("test", {x, u}, {xdot}, {"x"}, {"xdot"});
     }
 
     ~IntegratorTest() override

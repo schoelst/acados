@@ -23,3 +23,6 @@
 [submodule "qpoases"]
 	path = external/qpoases
 	url = https://github.com/acados/qpOASES.git
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/abseil/googletest.git

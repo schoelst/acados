@@ -56,3 +56,5 @@ endif()
 if (ACADOS_WITH_OOQP)
     include(external/ooqp)
 endif()
+
+add_subdirectory(googletest)

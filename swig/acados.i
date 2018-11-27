@@ -76,10 +76,11 @@ namespace std {
 %}
 %import "casadi/casadi.i"
 
+%include "simulators.i"
+
 %include "conversions.i"
 %include "ocp_typemaps.i"
 
 %feature("autodoc", "3");
 //%include "ocp_qp.i"
 //%include "ocp_nlp.i"
-%include "simulators.i"

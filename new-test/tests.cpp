@@ -52,7 +52,7 @@ class IntegratorTest : public ::testing::Test
 };
 
 
-// TESTS GO HERE
+// SIMPLE TESTS GO HERE (TEST)
 
 TEST(IntegratorTest, constructor_reject_empty_model)
 {
@@ -70,6 +70,7 @@ TEST(IntegratorTest, constructor_rejects_missing_step_size)
     ASSERT_THROW(Integrator(fun, {}), std::invalid_argument);
 }
 
+// TESTS USING THE TEST CLASS GO HERE (TEST_F)
 
 TEST_F(IntegratorTest, construtor_succeeds_for_simple_model)
 {
@@ -77,8 +78,6 @@ TEST_F(IntegratorTest, construtor_succeeds_for_simple_model)
     // itgr.print_settings();
     SUCCEED();
 }
-
-
 
 }  // namespace acados
 

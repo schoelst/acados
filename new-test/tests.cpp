@@ -57,7 +57,7 @@ class IntegratorTest : public ::testing::Test
 TEST(IntegratorTest, constructor_reject_empty_model)
 {
     Dict options({{"step_size", 0.1}});
-    Function fun("test");
+    Function fun("test", vector<SX>({}), vector<SX>({}));
     ASSERT_THROW(Integrator(fun, options), std::invalid_argument);
 }
 
